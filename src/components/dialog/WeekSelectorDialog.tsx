@@ -1,5 +1,3 @@
-"use client"
-
 import {
     AlertDialog,
     AlertDialogContent,
@@ -27,8 +25,19 @@ export function WeekSelectorDialog({ isOpen, onClose, onSave, selectedMeals }: W
     const [selectedWeek, setSelectedWeek] = useState<string>("")
     const mealTabs = useAppSelector(selectMealsList)
 
+    const handleSaveAndClose = () => {
+        onSave(selectedWeek)
+        onClose()
+    }
+
+    const handleSelectWeek = (params: string) => {
+        console.log("params", JSON.stringify(params));
+        setSelectedWeek(params)
+
+    }
+
     return (
-        <AlertDialog open={isOpen} onOpenChange={onClose}>
+        <AlertDialog open={isOpen}>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle className="text-center text-xl font-semibold">Select Week</AlertDialogTitle>
@@ -40,26 +49,25 @@ export function WeekSelectorDialog({ isOpen, onClose, onSave, selectedMeals }: W
                 <div className="py-4">
                     <div className="grid grid-cols-4 gap-4 mb-6">
                         {mealTabs.map((week, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setSelectedWeek(`week${index + 1}`)}
-                                className={cn(
-                                    "py-2 px-4 rounded-lg text-sm font-medium transition-colors",
-                                    selectedWeek === `week${index + 1}` ? "bg-blue-100" : "bg-gray-100 hover:bg-gray-200",
-                                )}
-                            >
-                                {week.tab}
-                            </button>
+                            week.tab !== "All Meals" && (
+                                <button
+                                    key={index}
+                                    onClick={() => handleSelectWeek(`Week ${index}`)}
+                                    className={cn(
+                                        "py-2 px-4 rounded-lg text-sm font-medium transition-colors",
+                                        selectedWeek === `Week ${index}` ? "bg-blue-100" : "bg-gray-100 hover:bg-gray-200",
+                                    )}
+                                >
+                                    {week.tab}
+                                </button>
+                            )
                         ))}
                     </div>
 
                     <AlertDialogFooter>
                         <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={() => {
-                                onSave(selectedWeek)
-                                onClose()
-                            }}
+                            onClick={handleSaveAndClose}
                             disabled={!selectedWeek}
                         >
                             Save

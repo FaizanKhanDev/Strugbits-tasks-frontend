@@ -11,6 +11,7 @@ import { setMealList } from "@/lib/features/meals/mealsSlice"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { selectMealsList } from "@/lib/features/meals/mealsSlice"
 import ComfirmationDialog from "@/components/dialog/ComfirmationDialog"
+import { WeekSelectorDialog } from "@/components/dialog/WeekSelectorDialog"
 export default function MealPlanner() {
   const { data: mealsResponse, isLoading, error } = useGetMealsListQuery({});
 
@@ -18,13 +19,23 @@ export default function MealPlanner() {
   const mealsList: any = useAppSelector(selectMealsList)
   const [selectedTab, setSelectedTab] = useState("All Meals");
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
+  const [selectedCardsItem, setSelectedCardsItem] = useState([]);
 
-  const handleCardClick = (index: number) => {
+  const handleCardClick = (index: number, item: any) => {
+
     setSelectedCards((prevSelected: any) =>
       prevSelected.includes(index)
         ? prevSelected.filter((i: number) => i == index)
         : [...prevSelected, index]
     );
+
+    setSelectedCardsItem((prevSelected: any) => {
+      if (prevSelected.some((selectedItem: any) => selectedItem.id == item.id)) {
+        return prevSelected.filter((i: any) => i.id != item.id);
+      } else {
+        return [...prevSelected, item];
+      }
+    });
   };
 
 
@@ -55,6 +66,40 @@ export default function MealPlanner() {
     setIsDialogOpen(false)
   }
 
+  const [isWeekDialogOpen, setWeekIsDialogOpen] = useState(false)
+  const [selectedWeek, setSelectedWeek] = useState<string>("")
+
+  // Function to handle saving the selected week
+  const handleSaveWeek = (week: string) => {
+    setSelectedWeek(week)
+    console.log("week", week);
+    let payload = {
+      tab: week,
+      data: selectedCardsItem
+    }
+    try {
+      dispatch(setMealList(payload));
+    } catch (error) {
+      console.error("Error dispatching updateMealList action:", error);
+    }
+
+  }
+
+  const handleWeekDialog = (isOpen: boolean) => {
+    setWeekIsDialogOpen(isOpen)
+    // let payload = {
+    //   tab: selectedWeek,
+    //   data: selectedCardsItem
+    // }
+    // try {
+    //   dispatch(setMealList(payload));
+    // } catch (error) {
+    //   console.error("Error dispatching updateMealList action:", error);
+    // }
+    // console.log("payload", JSON.stringify(payload));
+
+  }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-blue-50">
@@ -66,6 +111,14 @@ export default function MealPlanner() {
         description="This action cannot be undone. This will permanently delete your account and remove your data from our servers."
         onConfirm={handleConfirmDeleteDialog}
       />
+
+      <WeekSelectorDialog
+        isOpen={isWeekDialogOpen}
+        onClose={() => handleWeekDialog(false)}
+        onSave={handleSaveWeek}
+        selectedMeals={[]}
+      />
+
 
       {/* Hero Section */}
       <div
@@ -92,6 +145,9 @@ export default function MealPlanner() {
         <div className="flex z-50 flex-col sticky top-0 p-10 bg-white md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <MealTabs activeTab={selectedTab} setActiveTab={setSelectedTab}></MealTabs>
           <Button
+
+            disabled={selectedCardsItem.length == 0}
+            onClick={() => setWeekIsDialogOpen(true)}
             variant="secondary"
             className="px-6 py-3 text-white bg-[#00436C] hover:bg-[#003255] rounded-md"
           >
@@ -108,7 +164,7 @@ export default function MealPlanner() {
               .data.map((item: any, index: number) => (
                 <div
                   key={index}
-                  onClick={() => handleCardClick(index)}
+                  onClick={() => handleCardClick(index, item)}
                   className={`rounded-lg transition-all duration-300 cursor-pointer ${selectedCards.includes(index)
                     ? "border-2"
                     : ""

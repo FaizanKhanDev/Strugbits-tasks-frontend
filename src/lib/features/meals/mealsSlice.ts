@@ -38,10 +38,6 @@ export const mealsSlice = createAppSlice({
         allMeals.data = action.payload.data;
 
       }
-      let againgFInd = state.mealsList.find((meal) => meal.tab == action.payload.tab);
-      if (againgFInd) {
-        console.log(":FIRED", JSON.stringify(againgFInd.data));
-      }
     },
 
 
@@ -50,7 +46,7 @@ export const mealsSlice = createAppSlice({
   // state as their first argument.  (-==========) */
   selectors: {
     selectMealsList: (counter) => counter.mealsList
-    
+
   },
 });
 
