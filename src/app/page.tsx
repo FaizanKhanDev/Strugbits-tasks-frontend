@@ -31,19 +31,14 @@ export default function MealPlanner() {
 
         {/* Tabs Navigation */}
         <div className="flex z-50 flex-col sticky top-0 p-10 bg-white md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-          {/* <Tabs defaultValue="all" className="w-full md:w-auto  z-10 shadow-md">
-            <TabsList>
-              <TabsTrigger value="all">All Meals</TabsTrigger>
-              <TabsTrigger value="week1">Week 1</TabsTrigger>
-              <TabsTrigger value="week2">Week 2</TabsTrigger>
-              <TabsTrigger value="week3">Week 3</TabsTrigger>
-              <TabsTrigger value="week4">Week 4</TabsTrigger>
-            </TabsList>
-          </Tabs> */}
           <MealTabs></MealTabs>
-          <Button variant="secondary" className="w-full md:w-auto">
+          <Button
+            variant="secondary"
+            className="px-6 py-3 text-white bg-[#00436C] hover:bg-[#003255] rounded-md"
+          >
             Add to Week
           </Button>
+
         </div>
 
         {/* Meal Grid */}

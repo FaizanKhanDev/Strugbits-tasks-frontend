@@ -31,23 +31,17 @@ export default function MealTabs() {
                         aria-controls={`${tab.id}-panel`}
                         id={`${tab.id}-tab`}
                         className={cn(
-                            "relative py-4 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500",
+                            "relative py-4 text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ",
                             activeTab === tab.id
-                                ? "text-blue-600 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-0.5 before:bg-blue-600"
+                                ? "text-[#00436C] before:absolute before:bottom-0 before:left-1/4 before:right-1/4 before:h-1 before:bg-[#00436C]"
                                 : "text-gray-500 hover:text-gray-700",
                         )}
                         onClick={() => setActiveTab(tab.id)}
                     >
                         {tab.label}
-                        {tab.required && (
-                            <span className="ml-0.5 text-red-500" aria-label="required">
-                                *
-                            </span>
-                        )}
                     </button>
                 ))}
             </nav>
         </div>
     )
 }
-
