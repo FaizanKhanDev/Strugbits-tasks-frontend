@@ -6,18 +6,32 @@ import { Card } from "@/components/ui/card"
 import RecipeCard from "@/components/cards/RecipsCards"
 import MealTabs from "@/components/tabs/MealTabs"
 import { useGetMealsListQuery } from "@/lib/features/meals/mealsApiSlice"
-import { useEffect } from "react"
+import { useEffect, useState } from "react";
+import { setMealList } from "@/lib/features/meals/mealsSlice"
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { selectMealsList } from "@/lib/features/meals/mealsSlice"
 export default function MealPlanner() {
   const { data: mealsResponse, isLoading, error } = useGetMealsListQuery({});
 
+  const dispatch = useAppDispatch();
+  const mealsList: any = useAppSelector(selectMealsList)
+  const [selectedTab, setSelectedTab] = useState("All Meals");
+
   useEffect(() => {
     if (mealsResponse) {
-      console.log("mealsResponse", JSON.stringify(mealsResponse));
+      let payload = {
+        data: mealsResponse.recipes,
+        tab: "All Meals"
+      }
+      dispatch(setMealList(payload));
     }
-  }, [mealsResponse]);
+  }, [mealsResponse, dispatch]);
 
   return (
-    <div className="min-h-screen  bg-gradient-to-br from-rose-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 to-blue-50">
+
+
+
       {/* Hero Section */}
       <div
         className="relative h-[400px] bg-cover bg-center"
@@ -53,10 +67,19 @@ export default function MealPlanner() {
 
         {/* Meal Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {meals.map((meal, index) => (
-            <RecipeCard key={index} data={meal}></RecipeCard>
+          {mealsList.find((meal: any) => meal.tab == selectedTab)?.data.length > 0 ? (
+            mealsList
+              .find((meal: any) => meal.tab == selectedTab)
+              .data.map((item: any, index: number) => (
+                <RecipeCard key={index} data={item}></RecipeCard>
+              ))
+          ) : (
+            <p>No meals available for this tab.</p>
+          )}
 
-          ))}
+
+
+
         </div>
       </div>
     </div>
