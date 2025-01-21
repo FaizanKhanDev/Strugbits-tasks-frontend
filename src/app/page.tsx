@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import RecipeCard from "@/components/cards/RecipsCards"
-import MealTabs from "@/components/tabs/MenuTabs"
+import MealTabs from "@/components/tabs/MealTabs"
 
 export default function MealPlanner() {
   return (
