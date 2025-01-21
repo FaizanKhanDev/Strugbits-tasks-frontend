@@ -2,10 +2,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 
-export const listingsApiSlice = createApi({
+export const mealsApiSlice = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: "https://api.pupify.ca/api/v1/listings" }),
-    reducerPath: "listingsApiSlice",
-    tagTypes: ["Listings"],
+    reducerPath: "mealsApiSlice",
+    tagTypes: ["Meals"],
     endpoints: (builder) => ({
         getAllListings: builder.query({
             query: (data) => ({
@@ -24,4 +24,4 @@ export const listingsApiSlice = createApi({
 
 export const {
     useGetAllListingsQuery
-} = listingsApiSlice;
+} = mealsApiSlice;

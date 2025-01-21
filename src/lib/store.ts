@@ -1,17 +1,18 @@
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { combineSlices, configureStore } from "@reduxjs/toolkit";
-import { listingsApiSlice } from "./features/listings/listingsApiSlice";
-import { listingsSlice } from "./features/listings/listingsSlice"
+import { mealsApiSlice } from "./features/meals/mealsApiSlice";
+import { mealsSlice } from "./features/meals/mealsSlice";
 
+/* (==========) Combine all slices into a single root slice =========== */
 const rootReducer = combineSlices(
-    listingsApiSlice,
-    listingsSlice,
+    mealsApiSlice,
+    mealsSlice,
 );
 
-// Infer the `RootState` type from the root reducer
+/*( =========) Infer the `RootState` type from the root reducer =========== */
 export type RootState = ReturnType<typeof rootReducer>;
 
-// `makeStore` encapsulates the store configuration
+/* (=========) `makeStore` encapsulates the store configuration  (==============) */
 export const makeStore = () => {
     return configureStore({
         reducer: rootReducer,
@@ -19,16 +20,20 @@ export const makeStore = () => {
         middleware: (getDefaultMiddleware) => {
             return getDefaultMiddleware()
                 .concat(
-                    listingsApiSlice.middleware,
+                    mealsApiSlice.middleware,
                 );
         },
     });
 };
 
-// Infer the return type of `makeStore`
+/* (===============) Infer the return type of `makeStore`  (===============) */
 export type AppStore = ReturnType<typeof makeStore>;
-// Infer the `AppDispatch` type from the store itself
+
+
+/* (===============) Infer the `AppDispatch` type from the store itself  (===============) */
 export type AppDispatch = AppStore["dispatch"];
+
+
 export type AppThunk<ThunkReturnType = void> = ThunkAction<
     ThunkReturnType,
     RootState,
