@@ -1,11 +1,21 @@
+"use client"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import RecipeCard from "@/components/cards/RecipsCards"
 import MealTabs from "@/components/tabs/MealTabs"
-
+import { useGetMealsListQuery } from "@/lib/features/meals/mealsApiSlice"
+import { useEffect } from "react"
 export default function MealPlanner() {
+  const { data: mealsResponse, isLoading, error } = useGetMealsListQuery({});
+
+  useEffect(() => {
+    if (mealsResponse) {
+      console.log("mealsResponse", JSON.stringify(mealsResponse));
+    }
+  }, [mealsResponse]);
+
   return (
     <div className="min-h-screen  bg-gradient-to-br from-rose-50 to-blue-50">
       {/* Hero Section */}
