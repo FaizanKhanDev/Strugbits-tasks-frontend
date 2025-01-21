@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { Star, StarHalf } from "lucide-react"
+import { useState } from "react";
 
 
 interface RecipeCardProps {
@@ -12,6 +13,11 @@ interface RecipeCardProps {
     };
 }
 export default function RecipeCard({ data }: RecipeCardProps) {
+    const [isReadMore, setIsReadMore] = useState(false); // Track whether to show full instructions
+
+    const handleReadMoreToggle = () => {
+        setIsReadMore(!isReadMore); // Toggle the read more/less state
+    };
     return (
         <div className="max-w-md mx-auto bg-white rounded-3xl shadow-sm overflow-hidden">
             <div className="relative">
@@ -38,12 +44,25 @@ export default function RecipeCard({ data }: RecipeCardProps) {
 
                 <p className="text-gray-600">
                     {
-                        data.instructions && data.instructions.map((instruction, index) => (
-                            <span key={index}>{instruction}</span>
-                        ))
+                        data.instructions && data.instructions.length > 0 ? (
+                            <>
+                                <span>
+                                    {isReadMore
+                                        ? data.instructions.join(" ")
+                                        : `${data.instructions.slice(0, 6).join(" ")}...`}
+                                </span>
+                                <button
+                                    className="text-gray-700 ml-2"
+                                    onClick={handleReadMoreToggle}
+                                >
+                                    {isReadMore ? "Read less" : "Read more"}
+                                </button>
+                            </>
+                        ) : (
+                            <span>No instructions available.</span>
+                        )
                     }
                 </p>
-
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                         <span className="text-gray-600">Cuisine:</span>

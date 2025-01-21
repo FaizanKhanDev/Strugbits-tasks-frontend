@@ -10,12 +10,25 @@ import { useEffect, useState } from "react";
 import { setMealList } from "@/lib/features/meals/mealsSlice"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { selectMealsList } from "@/lib/features/meals/mealsSlice"
+import ComfirmationDialog from "@/components/dialog/ComfirmationDialog"
 export default function MealPlanner() {
   const { data: mealsResponse, isLoading, error } = useGetMealsListQuery({});
 
   const dispatch = useAppDispatch();
   const mealsList: any = useAppSelector(selectMealsList)
   const [selectedTab, setSelectedTab] = useState("All Meals");
+  const [selectedCards, setSelectedCards] = useState<number[]>([]);
+
+  const handleCardClick = (index: number) => {
+    setSelectedCards((prevSelected: any) =>
+      prevSelected.includes(index)
+        ? prevSelected.filter((i: number) => i == index)
+        : [...prevSelected, index]
+    );
+  };
+
+
+
 
   useEffect(() => {
     if (mealsResponse) {
@@ -27,10 +40,32 @@ export default function MealPlanner() {
     }
   }, [mealsResponse, dispatch]);
 
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const handleOpenDeleteDialog = () => {
+    setIsDialogOpen(true)
+  }
+
+  const handleCloseDeleteDialog = () => {
+    setIsDialogOpen(false)
+  }
+
+  const handleConfirmDeleteDialog = () => {
+    setIsDialogOpen(false)
+  }
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-blue-50">
 
-
+      <ComfirmationDialog
+        isOpen={isDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        title="Are you absolutely sure?"
+        description="This action cannot be undone. This will permanently delete your account and remove your data from our servers."
+        onConfirm={handleConfirmDeleteDialog}
+      />
 
       {/* Hero Section */}
       <div
@@ -55,7 +90,7 @@ export default function MealPlanner() {
 
         {/* Tabs Navigation */}
         <div className="flex z-50 flex-col sticky top-0 p-10 bg-white md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-          <MealTabs></MealTabs>
+          <MealTabs activeTab={selectedTab} setActiveTab={setSelectedTab}></MealTabs>
           <Button
             variant="secondary"
             className="px-6 py-3 text-white bg-[#00436C] hover:bg-[#003255] rounded-md"
@@ -65,21 +100,26 @@ export default function MealPlanner() {
 
         </div>
 
-        {/* Meal Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mealsList.find((meal: any) => meal.tab == selectedTab)?.data.length > 0 ? (
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+          {mealsList.find((meal: any) => meal.tab === selectedTab)?.data.length > 0 ? (
             mealsList
-              .find((meal: any) => meal.tab == selectedTab)
+              .find((meal: any) => meal.tab === selectedTab)
               .data.map((item: any, index: number) => (
-                <RecipeCard key={index} data={item}></RecipeCard>
+                <div
+                  key={index}
+                  onClick={() => handleCardClick(index)}
+                  className={`rounded-lg transition-all duration-300 cursor-pointer ${selectedCards.includes(index)
+                    ? "border-2"
+                    : ""
+                    } ${selectedCards.includes(index) ? "border-[#00436C]" : ""}`}
+                >
+                  <RecipeCard data={item} />
+                </div>
               ))
           ) : (
             <p>No meals available for this tab.</p>
           )}
-
-
-
-
         </div>
       </div>
     </div>

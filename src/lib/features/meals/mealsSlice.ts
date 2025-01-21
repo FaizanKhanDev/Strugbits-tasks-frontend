@@ -50,6 +50,7 @@ export const mealsSlice = createAppSlice({
   // state as their first argument.  (-==========) */
   selectors: {
     selectMealsList: (counter) => counter.mealsList
+    
   },
 });
 
