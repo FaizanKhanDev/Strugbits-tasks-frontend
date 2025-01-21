@@ -7,7 +7,7 @@ import RecipeCard from "@/components/cards/RecipsCards"
 import MealTabs from "@/components/tabs/MealTabs"
 import { useGetMealsListQuery } from "@/lib/features/meals/mealsApiSlice"
 import { useEffect, useState } from "react";
-import { setMealList } from "@/lib/features/meals/mealsSlice"
+import { removeMealItem, setMealList } from "@/lib/features/meals/mealsSlice"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { selectMealsList } from "@/lib/features/meals/mealsSlice"
 import ComfirmationDialog from "@/components/dialog/ComfirmationDialog"
@@ -15,12 +15,19 @@ import { WeekSelectorDialog } from "@/components/dialog/WeekSelectorDialog"
 export default function MealPlanner() {
   const { data: mealsResponse, isLoading, error } = useGetMealsListQuery({});
 
+
+  /* (=======)  Hooks  (=======) */
   const dispatch = useAppDispatch();
+
+  /* (=======)  Local State  (=======) */
   const mealsList: any = useAppSelector(selectMealsList)
   const [selectedTab, setSelectedTab] = useState("All Meals");
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
-  const [selectedCardsItem, setSelectedCardsItem] = useState([]);
-
+  const [selectedCardsItem, setSelectedCardsItem] = useState<any>([]);
+  const [selectedDeleteItem, setSelectedDeleteItem] = useState<any>({});
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isWeekDialogOpen, setWeekIsDialogOpen] = useState(false)
+  const [selectedWeek, setSelectedWeek] = useState<string>("")
   const handleCardClick = (index: number, item: any) => {
 
     setSelectedCards((prevSelected: any) =>
@@ -40,7 +47,7 @@ export default function MealPlanner() {
 
 
 
-
+  /* (=======) set meals list  (=======) */
   useEffect(() => {
     if (mealsResponse) {
       let payload = {
@@ -52,54 +59,72 @@ export default function MealPlanner() {
   }, [mealsResponse, dispatch]);
 
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
+  /* (=======) Open Delete Dialog  (=======) */
   const handleOpenDeleteDialog = () => {
     setIsDialogOpen(true)
   }
 
+
+  /* (=======) Close Delete Dialog  (=======) */
   const handleCloseDeleteDialog = () => {
     setIsDialogOpen(false)
   }
 
+
+
+  /* (=======)  Handle Confirm Delete  (=======) */
   const handleConfirmDeleteDialog = () => {
     setIsDialogOpen(false)
+    dispatch(removeMealItem({
+      id: selectedDeleteItem && selectedDeleteItem.id,
+      tab: selectedTab
+    }))
   }
 
-  const [isWeekDialogOpen, setWeekIsDialogOpen] = useState(false)
-  const [selectedWeek, setSelectedWeek] = useState<string>("")
 
-  // Function to handle saving the selected week
+
+
+
+  /* (=======)  Handle Save Week  (=======) */
   const handleSaveWeek = (week: string) => {
+    /**
+     * Saves the selected meal cards to the selected week.
+     * @param {string} week - The week to save the meal cards to.
+     * @returns {void}
+     */
     setSelectedWeek(week)
-    console.log("week", week);
     let payload = {
       tab: week,
       data: selectedCardsItem
     }
     try {
       dispatch(setMealList(payload));
+      setSelectedCardsItem([])
+      setSelectedCards([])
     } catch (error) {
       console.error("Error dispatching updateMealList action:", error);
     }
 
   }
 
+/**
+ * Toggles the visibility of the week selection dialog.
+ * @param {boolean} isOpen - A boolean indicating whether the dialog should be open or closed.
+ */
+
   const handleWeekDialog = (isOpen: boolean) => {
     setWeekIsDialogOpen(isOpen)
-    // let payload = {
-    //   tab: selectedWeek,
-    //   data: selectedCardsItem
-    // }
-    // try {
-    //   dispatch(setMealList(payload));
-    // } catch (error) {
-    //   console.error("Error dispatching updateMealList action:", error);
-    // }
-    // console.log("payload", JSON.stringify(payload));
-
   }
 
+  /**
+   * Opens the delete confirmation dialog with the given item to be deleted.
+   * @param {any} item - The item to be deleted.
+   */
+  const handleDelete = (item: any) => {
+    setSelectedDeleteItem(item)
+    handleOpenDeleteDialog()
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-blue-50">
@@ -170,7 +195,7 @@ export default function MealPlanner() {
                     : ""
                     } ${selectedCards.includes(index) ? "border-[#00436C]" : ""}`}
                 >
-                  <RecipeCard data={item} />
+                  <RecipeCard tab={selectedTab} onDelete={handleDelete} data={item} />
                 </div>
               ))
           ) : (

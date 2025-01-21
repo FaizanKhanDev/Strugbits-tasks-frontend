@@ -40,6 +40,13 @@ export const mealsSlice = createAppSlice({
       }
     },
 
+    removeMealItem: (state, action: PayloadAction<any>) => {
+      const allMeals = state.mealsList.find((meal) => meal.tab == action.payload.tab);
+      if (allMeals) {
+        allMeals.data = allMeals.data.filter((item: any) => item.id !== action.payload.id);
+      }
+    },
+
 
   }),
   /* (-==========) You can define your selectors here. These selectors receive the slice
@@ -51,7 +58,7 @@ export const mealsSlice = createAppSlice({
 });
 
 // Action creators are generated for each case reducer function.
-export const { setMealList } =
+export const { setMealList, removeMealItem } =
   mealsSlice.actions;
 
 /* (==========) Selectors returned by `slice.selectors` take the root state as their first argument.  (==========) */

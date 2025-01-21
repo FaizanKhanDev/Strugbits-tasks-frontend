@@ -31,7 +31,6 @@ export function WeekSelectorDialog({ isOpen, onClose, onSave, selectedMeals }: W
     }
 
     const handleSelectWeek = (params: string) => {
-        console.log("params", JSON.stringify(params));
         setSelectedWeek(params)
 
     }

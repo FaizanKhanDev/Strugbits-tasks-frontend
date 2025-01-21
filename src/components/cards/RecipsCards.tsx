@@ -1,6 +1,6 @@
 import Image from "next/image"
-import { Star, StarHalf } from "lucide-react"
 import { useState } from "react";
+import { Star, StarHalf, Trash } from "lucide-react";  // Import Trash icon
 
 
 interface RecipeCardProps {
@@ -11,8 +11,10 @@ interface RecipeCardProps {
         rating: number;
         mealType: string[];
     };
+    tab: string,
+    onDelete: (item: any) => void;
 }
-export default function RecipeCard({ data }: RecipeCardProps) {
+export default function RecipeCard({ data, onDelete, tab }: RecipeCardProps) {
     const [isReadMore, setIsReadMore] = useState(false); // Track whether to show full instructions
 
     const handleReadMoreToggle = () => {
@@ -28,6 +30,18 @@ export default function RecipeCard({ data }: RecipeCardProps) {
                     height={300}
                     className="w-full object-cover"
                 />
+
+                {
+                    tab !== "All Meals" && (
+                        <div className="absolute top-4 left-4">
+                            <button onClick={() => onDelete(data)} className="p-2 bg-gray-800 rounded-full text-white hover:bg-gray-700">
+                                <Trash className="w-5 h-5" />
+                            </button>
+
+                        </div>
+                    )
+                }
+
                 <div className="absolute top-4 right-4">
                     <span className="px-3 py-1 bg-black text-white text-sm font-medium rounded-full">
                         {
@@ -36,6 +50,7 @@ export default function RecipeCard({ data }: RecipeCardProps) {
                             ))
                         }
                     </span>
+
                 </div>
             </div>
 
